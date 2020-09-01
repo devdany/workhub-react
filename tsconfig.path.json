@@ -25,6 +25,12 @@
 			],
 			"@types/*": [
 				"src/types/*"
+			],
+			"@query/*": [
+				"src/apollo/query/*"
+			],
+			"@write/*": [
+				"src/apollo/cache/writeCache/*"
 			]
 		}
 	}
