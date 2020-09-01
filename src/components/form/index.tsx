@@ -6,7 +6,7 @@ import { styleToString } from '@utils/stringUtils'
 import styled from 'styled-components'
 
 type InputProps = {
-  placeholder: string
+  placeholder?: string
   onChange: (e: any) => void
   value: string
   type?: string

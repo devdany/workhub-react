@@ -5,7 +5,10 @@ import { black, main } from '@theme/colors'
 import { homeBanner, homeContainer, homeHeader } from '@theme/media'
 
 import { IconButton } from '@components/commons/buttons'
+import ReactModal from 'react-modal'
+import SignUpModal from '@src/components/modals/signUp'
 import styled from 'styled-components'
+import { useModal } from 'react-modal-hook'
 
 type Props = {
 
@@ -13,7 +16,24 @@ type Props = {
 export default function Home(props: Props) {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
-  
+  const [showModal, hideModal] = useModal(() => {
+    const modalStyle = {
+      overlay : {
+        backgroundColor: 'rgba(0, 0, 0, 0.5)'
+      },
+      content: {
+        width: '380px',
+        height: '400px',
+        margin: 'auto',
+        border: 'none'
+      }
+    }
+    return (
+      <ReactModal isOpen onRequestClose={hideModal} style={modalStyle}>
+        <SignUpModal close={hideModal} />
+      </ReactModal>
+    )
+  })
   const handleChangeEmail = (e: any) => {
     setEmail(e.target.value)
   }
@@ -31,7 +51,7 @@ export default function Home(props: Props) {
   }
 
   const openSignupModal = () => {
-
+    showModal()
   }
   
   return (
