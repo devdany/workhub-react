@@ -1,15 +1,17 @@
 import { FormInput, FormSubmit } from '@components/form'
-import React, { useEffect, useState } from 'react'
+import { Mutation, MutationSignUpArgs } from '@src/types/graphql'
+import React, { useState } from 'react'
 
 import CircularProgress from '@material-ui/core/CircularProgress'
+import { FEED } from '@routes/path'
 import { SIGN_UP } from '@query/mutation'
-import { SignUpRes } from '@src/types/graphql'
 import { black } from '@theme/colors'
 import emailValidator from 'email-validator'
 import { setLoginUser } from '@write/user'
 import { setToken } from '@utils/localStorageService'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
+import { useHistory } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
 
 type Props = {
@@ -20,7 +22,8 @@ export default function SignUp(props: Props) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [signUpReq, { data, loading, error }] = useMutation<{ signUp: SignUpRes }>(SIGN_UP)
+  const [signUpReq, { loading }] = useMutation<Mutation, MutationSignUpArgs>(SIGN_UP)
+  const history = useHistory()
 
   const handleEmail = (e: any) => {
     setEmail(e.target.value)
@@ -58,6 +61,12 @@ export default function SignUp(props: Props) {
       return
     }
 
+    const pattern_spc = /[~!@#$%^&*()_+|<>?:{}]/
+
+    if (pattern_spc.test(username)) {
+      toast.error('Special characters cannot be used in Username.')
+    }
+
     if (password.length === 0) {
       toast.error('Password can not be empty.')
       return
@@ -75,23 +84,22 @@ export default function SignUp(props: Props) {
         password: password
       }
     })
+      .then(({ data }) => {
+        if (data) {
+          const { user, token } = data.signUp
+          setToken(token)
+          setLoginUser(user)
+          history.push(FEED)
+          props.close()
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          toast.error(err.message)
+        }
+      })
   }
 
-  useEffect(() => {
-    if (data) {
-      const { user, token } = data.signUp
-      setToken(token)
-      setLoginUser(user)
-      toast.success('Signup has been completed successfully')
-      props.close()
-    }
-  }, [data, props])
-
-  useEffect(() => {
-    if (error) {
-      toast.error('Fail to sign up')
-    }
-  }, [error])
   return (
     <>
     {loading && (

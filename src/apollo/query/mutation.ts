@@ -13,3 +13,31 @@ export const SIGN_UP = gql`
     }
   }
 `
+
+export const CONFIRM_TOKEN = gql`
+    mutation confirmToken($token: String!) {
+      confirmToken(token: $token) {
+        user {
+          id
+          email
+          username
+          createdAt
+        }
+        token
+      }
+    }
+`
+
+export const SIGN_IN = gql`
+  mutation signIn($emailOrUsername: String!, $password: String!) {
+    signIn(emailOrUsername: $emailOrUsername, password: $password) {
+      user {
+        id
+        email
+        username
+        createdAt
+      }
+      token
+    }
+  }
+`
