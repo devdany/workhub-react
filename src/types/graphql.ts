@@ -21,7 +21,7 @@ export type QueryGetUserArgs = {
 
 export type User = {
   __typename?: 'User';
-  id: Scalars['ID'];
+  id: Scalars['Float'];
   email: Scalars['String'];
   username: Scalars['String'];
   createdAt: Scalars['String'];
@@ -29,7 +29,9 @@ export type User = {
 
 export type Mutation = {
   __typename?: 'Mutation';
-  signUp: SignUpRes;
+  signUp: LoginUser;
+  confirmToken: LoginUser;
+  signIn: LoginUser;
 };
 
 
@@ -39,8 +41,19 @@ export type MutationSignUpArgs = {
   password: Scalars['String'];
 };
 
-export type SignUpRes = {
-  __typename?: 'SignUpRes';
+
+export type MutationConfirmTokenArgs = {
+  token: Scalars['String'];
+};
+
+
+export type MutationSignInArgs = {
+  emailOrUsername: Scalars['String'];
+  password: Scalars['String'];
+};
+
+export type LoginUser = {
+  __typename?: 'LoginUser';
   user: User;
   token: Scalars['String'];
 };

@@ -1,21 +1,62 @@
+import { CONFIRM_TOKEN, SIGN_IN } from '@query/mutation'
+/* eslint-disable react-hooks/exhaustive-deps */
 import { FacebookIcon, GithubIcon, GoogleIcon } from '@icons/index'
 import { FormDivider, FormInput, FormLinkText, FormSubmit } from '@components/form'
-import React, { useState } from 'react'
+import { Mutation, MutationConfirmTokenArgs, MutationSignInArgs } from '@src/types/graphql'
+import React, { useEffect, useState } from 'react'
 import { black, main } from '@theme/colors'
 import { homeBanner, homeContainer, homeHeader } from '@theme/media'
 
+import CircularProgress from '@material-ui/core/CircularProgress'
+import { FEED } from '@routes/path'
 import { IconButton } from '@components/commons/buttons'
 import ReactModal from 'react-modal'
 import SignUpModal from '@src/components/modals/signUp'
+import { getToken } from '@utils/localStorageService'
+import { setLoginUser } from '@write/user'
+import { setToken } from '@utils/localStorageService'
 import styled from 'styled-components'
+import { toast } from 'react-toastify'
+import { useHistory } from 'react-router-dom'
 import { useModal } from 'react-modal-hook'
+import { useMutation } from '@apollo/client'
 
 type Props = {
 
 }
 export default function Home(props: Props) {
-  const [email, setEmail] = useState('')
+  const [emailOrUsername, setEmailOrUsername] = useState('')
+  const [isNeedAuth, setNeedAuth] = useState(false)
   const [password, setPassword] = useState('')
+  const [confirmTokenReq] = useMutation<Mutation, MutationConfirmTokenArgs>(CONFIRM_TOKEN)
+  const [signInReq, { loading }] = useMutation<Mutation, MutationSignInArgs>(SIGN_IN)
+  const history = useHistory()
+
+  useEffect(() => {
+    const authToken = getToken()
+    if (!authToken) {
+      setNeedAuth(true)
+      return
+    }
+
+    confirmTokenReq({
+      variables: {
+        token: authToken
+      }
+    })
+      .then(({ data }) => {
+        if (data) {
+          const { user, token } = data.confirmToken
+          setToken(token)
+          setLoginUser(user)
+          history.push(FEED)
+        }
+      })
+      .catch((err) => {
+        setNeedAuth(true)
+      })
+  }, [])
+
   const [showModal, hideModal] = useModal(() => {
     const modalStyle = {
       overlay : {
@@ -34,8 +75,8 @@ export default function Home(props: Props) {
       </ReactModal>
     )
   })
-  const handleChangeEmail = (e: any) => {
-    setEmail(e.target.value)
+  const handleChangeEmailOrUsername = (e: any) => {
+    setEmailOrUsername(e.target.value)
   }
   
   const handleChangePassword = (e: any) => {
@@ -43,7 +84,33 @@ export default function Home(props: Props) {
   }
   
   const handleLogin = (e: any) => {
+    if (emailOrUsername === '') {
+      toast.error('Email or username can not be empty.')
+    }
 
+    if (password === '') {
+      toast.error('Password can not be empty.')
+    }
+
+    signInReq({
+      variables: {
+        emailOrUsername: emailOrUsername,
+        password: password,
+      }
+    })
+      .then(({ data }) => {
+        if (data) {
+          const { user, token } = data.signIn
+          setToken(token)
+          setLoginUser(user)
+          history.push(FEED)
+        }
+      })
+      .catch((err) => {
+        if (err) {
+          toast.error(err.message)
+        }
+      })
   }
   
   const linkToFind = () => {
@@ -56,37 +123,46 @@ export default function Home(props: Props) {
   
   return (
     <Container>
-      <HomeHeader>
-        <HomeHeaderTitle>Work Hub</HomeHeaderTitle>
-      </HomeHeader>
-      <BodyContainer>
-        <HomeBannerBox>
-          <HomeBannerTitle>Work Hub</HomeBannerTitle>
-          <HomeBannerDescription>Complete your project on Workhub.</HomeBannerDescription>
-        </HomeBannerBox>
-        <HomeAuthBox>
-          <FormInput styles={{ width: '360px', 'margin-top': '15px;' }} value={email} placeholder={'Email'} onChange={handleChangeEmail} />
-          <FormInput styles={{ width: '360px', 'margin-top': '15px;' }} type={'password'} value={password} placeholder={'Password'} onChange={handleChangePassword} />
-          <FormSubmit styles={{ width: '394px', 'margin-top': '15px;' }} onClick={handleLogin} title={'Login'} />
-          <FormLinkText styles={{ 'margin-top': '15px;' }} onClick={linkToFind} text={'Forgot your account?'}/>
-          <FormDivider margin={20} size={'394px'} />
-          <SignUpBox>
-            <FormLinkText onClick={openSignupModal} text={'Sign Up'}/>
-            <FormDivider vertical={true} margin={70} size={'20px'} />
-            <ExAuthBox>
-              <IconButton>
-                <GoogleIcon />
-              </IconButton>
-              <IconButton>
-                <FacebookIcon />
-              </IconButton>
-              <IconButton>
-                <GithubIcon />
-              </IconButton>
-            </ExAuthBox>
-          </SignUpBox>
-        </HomeAuthBox>
-      </BodyContainer>
+      { isNeedAuth && (
+        <>
+        <HomeHeader>
+          <HomeHeaderTitle>Work Hub</HomeHeaderTitle>
+        </HomeHeader>
+        <BodyContainer>
+          <HomeBannerBox>
+            <HomeBannerTitle>Work Hub</HomeBannerTitle>
+            <HomeBannerDescription>Complete your project on Workhub.</HomeBannerDescription>
+          </HomeBannerBox>
+          <HomeAuthBox>
+            { loading && (
+              <HomeAuthBoxVail>
+                <CircularProgress />
+              </HomeAuthBoxVail>
+            ) }
+            <FormInput styles={{ width: '360px', 'margin-top': '15px;' }} value={emailOrUsername} placeholder={'Email or Username'} onChange={handleChangeEmailOrUsername} />
+            <FormInput styles={{ width: '360px', 'margin-top': '15px;' }} type={'password'} value={password} placeholder={'Password'} onChange={handleChangePassword} />
+            <FormSubmit styles={{ width: '394px', 'margin-top': '15px;' }} onClick={handleLogin} title={'Login'} />
+            <FormLinkText styles={{ 'margin-top': '15px;' }} onClick={linkToFind} text={'Forgot your account?'}/>
+            <FormDivider margin={20} size={'394px'} />
+            <SignUpBox>
+              <FormLinkText onClick={openSignupModal} text={'Sign Up'}/>
+              <FormDivider vertical={true} margin={70} size={'20px'} />
+              <ExAuthBox>
+                <IconButton>
+                  <GoogleIcon />
+                </IconButton>
+                <IconButton>
+                  <FacebookIcon />
+                </IconButton>
+                <IconButton>
+                  <GithubIcon />
+                </IconButton>
+              </ExAuthBox>
+            </SignUpBox>
+          </HomeAuthBox>
+        </BodyContainer>
+        </>
+      )}
     </ Container>
   )
 }
@@ -94,6 +170,7 @@ export default function Home(props: Props) {
 const Container = styled.div`
   background-color: #EDEFF2;
   height: 100vh;
+  width: 100%;
 `
 
 const HomeHeader = styled.div`
@@ -157,6 +234,20 @@ const HomeAuthBox = styled.div`
   align-items: center;
   flex-direction: column;
   margin-right: 20px;
+  position: relative;
+`
+
+const HomeAuthBoxVail = styled.div`
+  width: 430px;
+  height: 292px;
+  display: flex;
+  border-radius: 8px;
+  justify-content: center;
+  position: absolute;
+  top: 0px;
+  left: 0px;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.5);
 `
 
 const SignUpBox = styled.div`
