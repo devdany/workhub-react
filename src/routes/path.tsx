@@ -1,4 +1,5 @@
 export const HOME = '/'
-export const FEED = '/feeds'
+export const FEED = '/feed'
 export const FOLLOW = '/follow'
-export const my = '/my'
+export const PROJECT = '/project'
+export const TEAM = '/team'

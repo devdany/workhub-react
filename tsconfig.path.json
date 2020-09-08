@@ -29,8 +29,8 @@
 			"@query/*": [
 				"src/apollo/query/*"
 			],
-			"@write/*": [
-				"src/apollo/cache/writeCache/*"
+			"@cache/*": [
+				"src/apollo/cache/*"
 			]
 		}
 	}
