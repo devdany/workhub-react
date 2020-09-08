@@ -5,6 +5,7 @@ import { FormDivider, FormInput, FormLinkText, FormSubmit } from '@components/fo
 import { Mutation, MutationConfirmTokenArgs, MutationSignInArgs } from '@src/types/graphql'
 import React, { useEffect, useState } from 'react'
 import { black, main } from '@theme/colors'
+import { getToken, setToken } from '@utils/localStorageService'
 import { homeBanner, homeContainer, homeHeader } from '@theme/media'
 
 import CircularProgress from '@material-ui/core/CircularProgress'
@@ -12,14 +13,12 @@ import { FEED } from '@routes/path'
 import { IconButton } from '@components/commons/buttons'
 import ReactModal from 'react-modal'
 import SignUpModal from '@src/components/modals/signUp'
-import { getToken } from '@utils/localStorageService'
-import { setLoginUser } from '@write/user'
-import { setToken } from '@utils/localStorageService'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
 import { useHistory } from 'react-router-dom'
 import { useModal } from 'react-modal-hook'
 import { useMutation } from '@apollo/client'
+import { userVar } from '@cache/dispatch'
 
 type Props = {
 
@@ -48,7 +47,7 @@ export default function Home(props: Props) {
         if (data) {
           const { user, token } = data.confirmToken
           setToken(token)
-          setLoginUser(user)
+          userVar(user)
           history.push(FEED)
         }
       })
@@ -71,7 +70,7 @@ export default function Home(props: Props) {
     }
     return (
       <ReactModal isOpen onRequestClose={hideModal} style={modalStyle}>
-        <SignUpModal close={hideModal} />
+        <SignUpModal history={history} close={hideModal} />
       </ReactModal>
     )
   })
@@ -102,7 +101,7 @@ export default function Home(props: Props) {
         if (data) {
           const { user, token } = data.signIn
           setToken(token)
-          setLoginUser(user)
+          userVar(user)
           history.push(FEED)
         }
       })

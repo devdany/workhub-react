@@ -24,7 +24,10 @@ export type User = {
   id: Scalars['Float'];
   email: Scalars['String'];
   username: Scalars['String'];
+  profileImg: Scalars['String'];
   createdAt: Scalars['String'];
+  lastLogin: Scalars['String'];
+  isInitalize: Scalars['Boolean'];
 };
 
 export type Mutation = {

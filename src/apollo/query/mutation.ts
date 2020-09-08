@@ -7,7 +7,9 @@ export const SIGN_UP = gql`
         id
         email
         username
+        profileImg
         createdAt
+        isInitalize
       }
       token
     }
@@ -21,7 +23,9 @@ export const CONFIRM_TOKEN = gql`
           id
           email
           username
+          profileImg
           createdAt
+          isInitalize
         }
         token
       }
@@ -35,7 +39,9 @@ export const SIGN_IN = gql`
         id
         email
         username
+        profileImg
         createdAt
+        isInitalize
       }
       token
     }

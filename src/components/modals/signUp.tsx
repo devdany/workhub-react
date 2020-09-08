@@ -4,18 +4,19 @@ import React, { useState } from 'react'
 
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { FEED } from '@routes/path'
+import { History } from 'history'
 import { SIGN_UP } from '@query/mutation'
 import { black } from '@theme/colors'
 import emailValidator from 'email-validator'
-import { setLoginUser } from '@write/user'
 import { setToken } from '@utils/localStorageService'
 import styled from 'styled-components'
 import { toast } from 'react-toastify'
-import { useHistory } from 'react-router-dom'
 import { useMutation } from '@apollo/client'
+import { userVar } from '@cache/dispatch'
 
 type Props = {
   close: () => void
+  history: History
 }
 export default function SignUp(props: Props) {
   const [email, setEmail] = useState('')
@@ -23,7 +24,7 @@ export default function SignUp(props: Props) {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [signUpReq, { loading }] = useMutation<Mutation, MutationSignUpArgs>(SIGN_UP)
-  const history = useHistory()
+
 
   const handleEmail = (e: any) => {
     setEmail(e.target.value)
@@ -88,8 +89,8 @@ export default function SignUp(props: Props) {
         if (data) {
           const { user, token } = data.signUp
           setToken(token)
-          setLoginUser(user)
-          history.push(FEED)
+          userVar(user)
+          props.history.push(FEED)
           props.close()
         }
       })
