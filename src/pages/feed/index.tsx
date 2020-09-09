@@ -27,7 +27,7 @@ export default function Feed(props: Props) {
         height: '90vh',
         margin: 'auto',
         border: 'none',
-        padding: '0px'
+        padding: '0px',
       }
     }
     return (
