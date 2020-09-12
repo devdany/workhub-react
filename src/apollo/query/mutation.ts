@@ -8,7 +8,12 @@ export const SIGN_UP = gql`
         email
         username
         profileImg
+        lastName
+        firstName
+        headLine
         createdAt
+        updatedAt
+        lastLogin
         isInitalize
       }
       token
@@ -24,7 +29,12 @@ export const CONFIRM_TOKEN = gql`
           email
           username
           profileImg
+          lastName
+          firstName
+          headLine
           createdAt
+          updatedAt
+          lastLogin
           isInitalize
         }
         token
@@ -40,10 +50,33 @@ export const SIGN_IN = gql`
         email
         username
         profileImg
+        lastName
+        firstName
+        headLine
         createdAt
+        updatedAt
+        lastLogin
         isInitalize
       }
       token
+    }
+  }
+`
+
+export const EDIT_PROFILE = gql`
+  mutation editProfile($userId: Float!, $profileImg: String, $lastName: String, $firstName: String, $headLine: String) {
+    editProfile(userId: $userId, profileImg: $profileImg, lastName: $lastName, firstName: $firstName, headLine: $headLine) {
+      id
+      email
+      username
+      profileImg
+      lastName
+      firstName
+      headLine
+      createdAt
+      updatedAt
+      lastLogin
+      isInitalize
     }
   }
 `

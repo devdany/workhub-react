@@ -24,8 +24,12 @@ export type User = {
   id: Scalars['Float'];
   email: Scalars['String'];
   username: Scalars['String'];
-  profileImg: Scalars['String'];
+  profileImg?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  headLine?: Maybe<Scalars['String']>;
   createdAt: Scalars['String'];
+  updatedAt?: Maybe<Scalars['String']>;
   lastLogin: Scalars['String'];
   isInitalize: Scalars['Boolean'];
 };
@@ -35,6 +39,7 @@ export type Mutation = {
   signUp: LoginUser;
   confirmToken: LoginUser;
   signIn: LoginUser;
+  editProfile: User;
 };
 
 
@@ -53,6 +58,15 @@ export type MutationConfirmTokenArgs = {
 export type MutationSignInArgs = {
   emailOrUsername: Scalars['String'];
   password: Scalars['String'];
+};
+
+
+export type MutationEditProfileArgs = {
+  headLine?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  profileImg?: Maybe<Scalars['String']>;
+  userId: Scalars['Float'];
 };
 
 export type LoginUser = {
