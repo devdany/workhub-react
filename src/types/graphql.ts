@@ -62,11 +62,11 @@ export type MutationSignInArgs = {
 
 
 export type MutationEditProfileArgs = {
-  headLine?: Maybe<Scalars['String']>;
-  firstName?: Maybe<Scalars['String']>;
-  lastName?: Maybe<Scalars['String']>;
-  profileImg?: Maybe<Scalars['String']>;
   userId: Scalars['Float'];
+  profileImg?: Maybe<Scalars['String']>;
+  lastName?: Maybe<Scalars['String']>;
+  firstName?: Maybe<Scalars['String']>;
+  headLine?: Maybe<Scalars['String']>;
 };
 
 export type LoginUser = {
