@@ -11,6 +11,7 @@ import { EDIT_PROFILE } from '@query/mutation'
 import { LOGIN_USER } from '@cache/query/user'
 import { SetLoginUser } from '@cache/model'
 import styled from 'styled-components'
+import { toast } from 'react-toastify'
 import { userVar } from '@cache/dispatch'
 
 type Props = {
@@ -61,6 +62,7 @@ export default function SetUserInfo(props: Props) {
           if (result.data) {
             const updatedUser = result.data.editProfile
             userVar(updatedUser)
+            toast.success('Successfully saved!')
             console.log(updatedUser)
           }
         })
