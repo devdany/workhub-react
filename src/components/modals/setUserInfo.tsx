@@ -20,7 +20,6 @@ type Props = {
 export default function SetUserInfo(props: Props) {
   const { data } = useQuery<SetLoginUser>(LOGIN_USER)
   const [editProfileReq] = useMutation<Mutation, MutationEditProfileArgs>(EDIT_PROFILE)
-
   const [lastName, setLastName] = useState('')
   const [firstName, setFirstName] = useState('')
   const [headLine, setHeadLine] = useState('')
@@ -72,6 +71,10 @@ export default function SetUserInfo(props: Props) {
     }
   }
 
+  const handleSendEmail = () => {
+
+  }
+
   const onDropImage = (acceptedFile: File[]) => {
     const fileReader = new FileReader()
     const imageFile = acceptedFile[0]
@@ -101,6 +104,8 @@ export default function SetUserInfo(props: Props) {
       }
     }
   }, [data])
+
+  console.log(data)
 
   return (
     <Container>
@@ -157,8 +162,15 @@ export default function SetUserInfo(props: Props) {
               <SubHeaderText>Account Certification</SubHeaderText>
             </SubHeader>
             <CertificateBox>
-              <ConfirmedIcon color={postive} size={'2x'} />
-              <CertificatedText>Confirmed</CertificatedText>
+              {data.loginUser.isCertificated ? (
+                <>
+                  <ConfirmedIcon color={postive} size={'2x'} />
+                  <CertificatedText>Confirmed</CertificatedText>
+                </>
+              ): (
+                <FormSubmit styles={{ width: '120px' }} title={'Send email'} onClick={handleSendEmail}/>
+              )}
+              
             </CertificateBox>
             <FormDivider size={'90%'} margin={40} />
             <SubHeader>

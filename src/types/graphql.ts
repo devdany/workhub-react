@@ -32,6 +32,7 @@ export type User = {
   updatedAt?: Maybe<Scalars['String']>;
   lastLogin: Scalars['String'];
   isInitalize: Scalars['Boolean'];
+  isCertificated: Scalars['Boolean'];
 };
 
 export type Mutation = {
@@ -39,6 +40,7 @@ export type Mutation = {
   signUp: LoginUser;
   confirmToken: LoginUser;
   signIn: LoginUser;
+  sendCertificationMail: Scalars['Boolean'];
   editProfile: User;
 };
 
@@ -58,6 +60,11 @@ export type MutationConfirmTokenArgs = {
 export type MutationSignInArgs = {
   emailOrUsername: Scalars['String'];
   password: Scalars['String'];
+};
+
+
+export type MutationSendCertificationMailArgs = {
+  email: Scalars['String'];
 };
 
 
