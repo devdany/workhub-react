@@ -1,4 +1,5 @@
 export const main = '#1877F2'
+export const main_invalid = 'rgba(24, 119, 242, 0.4)'
 export const black = '#1C1E21'
 export const postive = '#82B31B'
 export const lightGray = '#dddddd'

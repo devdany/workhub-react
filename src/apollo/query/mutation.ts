@@ -41,3 +41,9 @@ export const EDIT_PROFILE = gql`
     }
   }
 `
+
+export const SEND_CERTIFICATION_MAIL = gql`
+  mutation sendCertificationMail($email: String!) {
+    sendCertificationMail(email: $email)
+  }
+`

@@ -1,5 +1,6 @@
+import { EDIT_PROFILE, SEND_CERTIFICATION_MAIL } from '@query/mutation'
 import { FormDivider, FormInput, FormSubmit } from '../form'
-import { Mutation, MutationEditProfileArgs } from '@src/types/graphql'
+import { Mutation, MutationEditProfileArgs, MutationSendCertificationMailArgs } from '@src/types/graphql'
 import React, { useEffect, useState } from 'react'
 import { black, lightGray, main, postive } from '@theme/colors'
 import { useMutation, useQuery } from '@apollo/client'
@@ -7,7 +8,6 @@ import { useMutation, useQuery } from '@apollo/client'
 import { CircularProgress } from '@material-ui/core'
 import { ConfirmedIcon } from '@src/icons'
 import Dropzone from 'react-dropzone'
-import { EDIT_PROFILE } from '@query/mutation'
 import { LOGIN_USER } from '@cache/query/user'
 import { SetLoginUser } from '@cache/model'
 import styled from 'styled-components'
@@ -20,6 +20,8 @@ type Props = {
 export default function SetUserInfo(props: Props) {
   const { data } = useQuery<SetLoginUser>(LOGIN_USER)
   const [editProfileReq] = useMutation<Mutation, MutationEditProfileArgs>(EDIT_PROFILE)
+  const [sendCertificationMmailReq, { loading }] = useMutation<Mutation, MutationSendCertificationMailArgs>(SEND_CERTIFICATION_MAIL)
+  const [isSendCertificationNumber, setIsSendCertificationNumber] = useState(false)
   const [lastName, setLastName] = useState('')
   const [firstName, setFirstName] = useState('')
   const [headLine, setHeadLine] = useState('')
@@ -72,7 +74,22 @@ export default function SetUserInfo(props: Props) {
   }
 
   const handleSendEmail = () => {
-
+    if (data && data.loginUser) {
+      sendCertificationMmailReq({
+        variables: {
+          email: data.loginUser.email
+        }
+      })
+        .then(({ data }) => {
+          if (data) {
+            // 인증번호 입력모드로 ui 변경
+            setIsSendCertificationNumber(data.sendCertificationMail)
+          }
+        })
+        .catch((err) => {
+          console.log(err)
+        })
+    }
   }
 
   const onDropImage = (acceptedFile: File[]) => {
@@ -104,8 +121,6 @@ export default function SetUserInfo(props: Props) {
       }
     }
   }, [data])
-
-  console.log(data)
 
   return (
     <Container>
@@ -168,7 +183,12 @@ export default function SetUserInfo(props: Props) {
                   <CertificatedText>Confirmed</CertificatedText>
                 </>
               ): (
-                <FormSubmit styles={{ width: '120px' }} title={'Send email'} onClick={handleSendEmail}/>
+                isSendCertificationNumber ? (
+                  // timer & input & submit bt
+                  <></>
+                ) : (
+                  <FormSubmit styles={{ width: '120px' }} loading={loading} title={'Send email'} onClick={handleSendEmail}/>
+                )
               )}
               
             </CertificateBox>

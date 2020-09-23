@@ -1,7 +1,9 @@
+import { main, main_invalid } from '@theme/colors'
+
+import { CircularProgress } from '@material-ui/core'
 import React from 'react'
 import Styles from '@src/types/styles'
 import { clickableDark } from '@theme/interaction'
-import { main } from '@theme/colors'
 import { styleToString } from '@utils/stringUtils'
 import styled from 'styled-components'
 
@@ -30,15 +32,27 @@ type SubmitProps = {
   title: string
   onClick: (e: any) => void
   styles?: Styles
+  loading?: boolean
 }
 export function FormSubmit(props: SubmitProps) {
   let styleString = ''
   if (props.styles) {
     styleString = styleToString(props.styles)
   }
+
+  let handleClick = props.onClick
+
+  if (props.loading) {
+    handleClick = () => {} 
+  }
+
   return (
-    <SubmitBox styles={styleString} onClick={props.onClick}>
-      <SubmitText>{props.title}</SubmitText>
+    <SubmitBox loading={props.loading} styles={styleString} onClick={handleClick}>
+      {props.loading ? (
+        <CircularProgress size={24} />
+      ): (
+        <SubmitText>{props.title}</SubmitText>
+      )}
     </SubmitBox>
   )
 }
@@ -78,13 +92,13 @@ const Input = styled.input<{ styles?: string }>`
   ${(props) => props.styles}
 `
 
-const SubmitBox = styled.div<{ styles?: string }>`
+const SubmitBox = styled.div<{ styles?: string, loading?: boolean }>`
   height: 42px;
-  background-color: ${main};
   display: flex;
   justify-content: center;
   align-items: center;
   border-radius: 6px;
+  background-color: ${(props) => props.loading ? main_invalid : main};
   ${(props) => props.styles};
   ${clickableDark};
 `
